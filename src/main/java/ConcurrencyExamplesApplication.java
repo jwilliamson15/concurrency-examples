@@ -1,7 +1,16 @@
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class ConcurrencyExamplesApplication {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         //all examples are take from OCP Java SE 11 Study Guide published by Sybex (Wiley Group) - ISBN 978-1-119-61913-0
+        System.out.println("---- Example 1 ----");
         example1();
+
+        Thread.sleep(2000);
+        System.out.println("---- Example 2 ----");
+        //Polling with sleep to aid thread scheduling
+        example2();
+
     }
 
     private static void example1() {
@@ -16,5 +25,16 @@ public class ConcurrencyExamplesApplication {
         //extends Thread class
         new ReadInventoryThread().start();
         System.out.println("end");
+    }
+
+    private static void example2() throws InterruptedException {
+        new Thread(() -> {
+            for (int i =0; i < 500; i++) CheckResults.counter++;
+        }).start();
+
+        while (CheckResults.counter < 100) {
+            System.out.println("Not reached yet");
+            Thread.sleep(1000);
+        }
     }
 }
