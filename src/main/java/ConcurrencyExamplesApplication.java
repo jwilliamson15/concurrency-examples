@@ -1,4 +1,5 @@
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ConcurrencyExamplesApplication {
     public static void main(String[] args) throws InterruptedException {
@@ -10,6 +11,11 @@ public class ConcurrencyExamplesApplication {
         System.out.println("---- Example 2 ----");
         //Polling with sleep to aid thread scheduling
         example2();
+
+        Thread.sleep(2000);
+        System.out.println("---- Example 3 ----");
+        //Polling with sleep to aid thread scheduling
+        example3();
 
     }
 
@@ -35,6 +41,25 @@ public class ConcurrencyExamplesApplication {
         while (CheckResults.counter < 100) {
             System.out.println("Not reached yet");
             Thread.sleep(1000);
+        }
+    }
+
+    private static void example3() {
+        ExecutorService service = null;
+        Runnable task1 = () -> System.out.println("Printing zoo inventory");
+        Runnable task2 = () -> {
+            for (int i = 0; i < 3; i++) System.out.println("Printing record: " + i);
+        };
+
+        try {
+            service = Executors.newSingleThreadExecutor();
+            System.out.println("begin");
+            service.execute(task1);
+            service.execute(task2);
+            service.execute(task1);
+            System.out.println("end");
+        } finally {
+            if (service != null) service.shutdown();
         }
     }
 }
