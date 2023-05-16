@@ -1,8 +1,12 @@
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class ConcurrencyExamplesApplication {
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
         //all examples are take from OCP Java SE 11 Study Guide published by Sybex (Wiley Group) - ISBN 978-1-119-61913-0
         System.out.println("---- Example 1 ----");
         example1();
@@ -16,6 +20,11 @@ public class ConcurrencyExamplesApplication {
         System.out.println("---- Example 3 ----");
         //Using the concurrency API for a single thread executor
         example3();
+
+        Thread.sleep(2000);
+        System.out.println("---- Example 4 ----");
+        //Using .get to return a Future<?> object
+        example4();
 
     }
 
@@ -58,6 +67,22 @@ public class ConcurrencyExamplesApplication {
             service.execute(task2);
             service.execute(task1);
             System.out.println("end");
+        } finally {
+            if (service != null) service.shutdown();
+        }
+    }
+
+    private static void example4() throws ExecutionException, InterruptedException {
+        ExecutorService service = null;
+        try {
+            service = Executors.newSingleThreadExecutor();
+            Future<?> result = service.submit(() -> {
+                for (int i = 0; i < 500; i++) CheckResults.counter++;
+            });
+            result.get(10, TimeUnit.SECONDS);
+            System.out.println("Reached!");
+        } catch (TimeoutException e) {
+            System.out.println("Not reached in time");
         } finally {
             if (service != null) service.shutdown();
         }
