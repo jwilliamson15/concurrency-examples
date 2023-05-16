@@ -14,7 +14,7 @@ public class ConcurrencyExamplesApplication {
 
         Thread.sleep(2000);
         System.out.println("---- Example 3 ----");
-        //Polling with sleep to aid thread scheduling
+        //Using the concurrency API for a single thread executor
         example3();
 
     }
